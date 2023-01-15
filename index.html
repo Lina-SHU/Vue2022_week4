@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>請先登入</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+  <div id="app">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+          <h2 class="fs-4 mb-3">請先登入</h2>
+          <div v-if="errMsg" class="alert alert-danger alert-dismissible mb-3" role="alert">
+            {{ errMsg }}
+          </div>
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" placeholder="請輸入帳號" v-model="user.username">
+            <label for="email">帳號</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" placeholder="請輸入密碼" v-model="user.password">
+            <label for="password">密碼</label>
+          </div>
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" type="button" @click="login">登入</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+  <script type="module">
+    import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
+    import { apiUrl } from './apiEnv.js'
+
+    const app = {
+      data () {
+        return {
+          user: {},
+          errMsg: null
+        }
+      },
+      methods: {
+        login () {
+          const url = `${apiUrl}admin/signin`;
+          axios.post(url, this.user)
+            .then((res) => {
+              document.cookie = `PToken=${res.data.token}; expires=${new Date(res.data.expired)}; path=/`;
+              window.location = './products.html';
+            })
+            .catch((err) => {
+              this.errMsg = err.response.data.message;
+            })
+        }
+      }
+    }
+
+    createApp(app)
+      .mount('#app');
+  </script>
+</body>
+</html>
