@@ -18,6 +18,19 @@ export default {
                   </div>
                   <img class="img-fluid" :src="tempProduct.imageUrl" :alt="tempProduct.title">
                 </div>
+
+                <template v-if="Array.isArray(tempProduct.tags)">
+                  <h3 class="fs-6 mb-3">輸入標籤</h3>
+                  <div v-for="(tag, index) in tempProduct.tags" :key="tag + '789'">
+                    <input type="text" class="form-control" v-model="tempProduct.tags[index]" />
+                  </div>
+                  <div v-if="!tempProduct?.tags?.length || tempProduct.tags[tempProduct.tags.length - 1]" class="mt-3">
+                    <button type="button" class="btn btn-outline-primary btn-sm d-block w-100" @click="tempProduct.tags.push('');">新增標籤</button>
+                  </div>
+                  <div v-else class="mt-3">
+                    <button type="button" class="btn btn-outline-danger btn-sm d-block w-100" @click="tempProduct.tags.pop();">刪除標籤</button>
+                  </div>
+                </template>
               </div>
               <div class="col-sm-8">
                 <div class="mb-3">
@@ -64,12 +77,13 @@ export default {
                 </div>
               </div>
             </div>
+
             <template v-if="Array.isArray(tempProduct.imagesUrl)">
               <h3 class="fs-6 mb-3">輸入多張圖片網址</h3>
               <div class="row">
                 <div v-for="(image, index) in tempProduct.imagesUrl" :key="image" class="col-md-4">
                   <input type="text" v-model="tempProduct.imagesUrl[index]" class="form-control">
-                  <img :src="tempProduct.imagesUrl[index]" alt="多張圖片網址" class="img-fluid" v-if="image">
+                  <img :src="tempProduct.imagesUrl[index]" alt="多張圖片網址" class="img-fluid" v-if="tempProduct.imagesUrl[index]">
                 </div>
               </div>
               <div v-if="!tempProduct?.imagesUrl?.length || tempProduct.imagesUrl[tempProduct.imagesUrl.length - 1]" class="mt-3">

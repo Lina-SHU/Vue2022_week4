@@ -60,9 +60,15 @@ const app = {
             imagesUrl: []
           }
         }
+        if (!this.tempProduct.tags) {
+          this.tempProduct = {
+            ...this.tempProduct,
+            tags: []
+          }
+        }
       } else if (value === 'new') {
         this.$refs.editMsg.openModal();
-        this.tempProduct = { imagesUrl: [] };
+        this.tempProduct = { imagesUrl: [], tags: [] };
       } else if (value === 'delete') {
         this.$refs.delMsg.openModal();
         this.tempProduct = { ...prd };
