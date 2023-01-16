@@ -1,12 +1,14 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
 import { apiUrl, apiPath } from './apiEnv.js';
 import pagination from './pagination.js';
-let editMsg = '';
-let delMsg = '';
+import editModal from './editModal.js';
+import deleteModal from './deleteModal.js';
 
 const app = {
   components: {
-    pagination
+    pagination,
+    editModal,
+    deleteModal
   },
   data () {
     return {
@@ -42,7 +44,7 @@ const app = {
       axios.delete(url)
         .then((res) => {
           this.getProducts();
-          delMsg.hide();
+          this.$refs.delMsg.closeModal();
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -51,7 +53,7 @@ const app = {
     openModal (value, prd) {
       if (value === 'edit') {
         this.tempProduct = { ...prd };
-        editMsg.show();
+        this.$refs.editMsg.openModal();
         if (!this.tempProduct.imagesUrl) {
           this.tempProduct = {
             ...this.tempProduct,
@@ -59,10 +61,10 @@ const app = {
           }
         }
       } else if (value === 'new') {
-        editMsg.show();
+        this.$refs.editMsg.openModal();
         this.tempProduct = { imagesUrl: [] };
       } else if (value === 'delete') {
-        delMsg.show();
+        this.$refs.delMsg.openModal();
         this.tempProduct = { ...prd };
       }
     },
@@ -79,7 +81,7 @@ const app = {
       axios[method](url, { data: this.tempProduct })
         .then((res) => {
           this.getProducts();
-          editMsg.hide();
+          this.$refs.editMsg.closeModal();
           this.tempProduct = {};
         })
         .catch((err) => {
@@ -96,11 +98,6 @@ const app = {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)PToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     axios.defaults.headers.common['Authorization'] = token;
     this.checkToken();
-
-    // 新增/編輯產品視窗
-    editMsg = new bootstrap.Modal(this.$refs.editModal);
-    // 刪除產品視窗
-    delMsg = new bootstrap.Modal(this.$refs.deleteModal);
   }
 }
 
