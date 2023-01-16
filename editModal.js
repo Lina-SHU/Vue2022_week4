@@ -26,7 +26,7 @@ export default {
 
                 <template v-if="Array.isArray(tempProduct.tags)">
                   <h3 class="fs-6 mb-3">輸入標籤</h3>
-                  <div v-for="(tag, index) in tempProduct.tags" :key="tag + '789'">
+                  <div v-for="(tag, index) in tempProduct.tags" :key="tag + '789'" class="mb-2">
                     <input type="text" class="form-control" v-model="tempProduct.tags[index]" />
                   </div>
                   <div v-if="!tempProduct?.tags?.length || tempProduct.tags[tempProduct.tags.length - 1]" class="mt-3">
