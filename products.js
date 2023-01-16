@@ -1,13 +1,18 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
 import { apiUrl, apiPath } from './apiEnv.js';
+import pagination from './pagination.js';
 let editMsg = '';
 let delMsg = '';
 
 const app = {
+  components: {
+    pagination
+  },
   data () {
     return {
       productList: [],
-      tempProduct: {}
+      tempProduct: {},
+      pages: 1
     }
   },
   methods: {
@@ -21,11 +26,12 @@ const app = {
           window.location = './index.html';
         })
     },
-    getProducts () {
-      const url = `${apiUrl}api/${apiPath}/admin/products`;
+    getProducts (page = 1) {
+      const url = `${apiUrl}api/${apiPath}/admin/products?page=${page}`;
       axios.get(url)
         .then((res) => {
           this.productList = res.data.products;
+          this.pages = res.data.pagination;          ;
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -61,34 +67,27 @@ const app = {
       }
     },
     editProduct () {
-      if (this.tempProduct.id) {
-        // 編輯           
-        const url = `${apiUrl}api/${apiPath}/admin/product/${this.tempProduct.id}`;
-        axios.put(url, { data: this.tempProduct })
-          .then((res) => {
-            this.getProducts();
-            editMsg.hide();
-            this.tempProduct = {};
-          })
-          .catch((err) => {
-            alert(err.response.data.message);
-          })
-      } else {
+      // 編輯
+      let url = `${apiUrl}api/${apiPath}/admin/product/${this.tempProduct.id}`;
+      let method = 'put';
+      if (!this.tempProduct.id) {
         // 新增
-        const url = `${apiUrl}api/${apiPath}/admin/product`;
-        axios.post(url, { data: this.tempProduct })
-          .then((res) => {
-            this.getProducts();
-            editMsg.hide();
-            this.tempProduct = {};
-          })
-          .catch((err) => {
-            alert(err.response.data.message);
-          })
+        url = `${apiUrl}api/${apiPath}/admin/product`;
+        method = 'post';
       }
+
+      axios[method](url, { data: this.tempProduct })
+        .then((res) => {
+          this.getProducts();
+          editMsg.hide();
+          this.tempProduct = {};
+        })
+        .catch((err) => {
+          alert(err.response.data.message);
+        })
     },
     editEnabled (prd) {
-      this.tempProduct = JSON.parse(JSON.stringify(prd));
+      this.tempProduct = { ...prd };
       this.tempProduct.is_enabled = this.tempProduct.is_enabled === 1 ? 0 : 1;
       this.editProduct();
     }
