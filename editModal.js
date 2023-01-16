@@ -1,3 +1,5 @@
+import { apiUrl, apiPath } from './apiEnv.js';
+
 export default {
   props: ['tempProduct', 'editProduct'],
   template: `
@@ -11,10 +13,13 @@ export default {
           <div class="modal-body">
             <div class="row">
               <div class="col-sm-4">
-                <div class="mb-2">
-                  <div class="mb-3">
-                    <label for="imageUrl" class="form-label">輸入圖片網址</label>
-                    <input type="text" class="form-control" placeholder="請輸入圖片連結" v-model.trim="tempProduct.imageUrl">
+                <div class="mb-3">
+                  <div class="mb-2">
+                    <label for="formFile" class="form-label">輸入圖片網址</label>
+                    <div class="input-group">
+                      <input type="file" class="form-control" id="formFile" @change="getFile($event)">
+                      <button class="btn btn-outline-secondary" type="button" @click="updateFile">上傳檔案</button>
+                    </div>
                   </div>
                   <img class="img-fluid" :src="tempProduct.imageUrl" :alt="tempProduct.title">
                 </div>
@@ -108,7 +113,8 @@ export default {
   `,
   data () {
     return {
-      editMsg: ''
+      editMsg: '',
+      fileData: ''
     }
   },
   methods: {
@@ -117,6 +123,22 @@ export default {
     },
     closeModal () {
       this.editMsg.hide();
+    },
+    getFile (event) {
+      this.fileData = event.target.files[0];
+    },
+    updateFile () {
+      const formData = new FormData();
+      formData.append('file-to-upload', this.fileData);
+      const url = `${apiUrl}api/${apiPath}/admin/upload`;
+      axios.post(url, formData)
+        .then((res) => {
+          console.log(res);
+          this.tempProduct.imageUrl = res.data.imageUrl;
+        })
+        .catch((err) => {
+          alert(err.response.data.message);
+        })
     }
   },
   mounted () {
