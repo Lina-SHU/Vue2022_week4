@@ -1,20 +1,23 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.min.js';
 import { apiUrl, apiPath } from './apiEnv.js';
-import pagination from './pagination.js';
-import editModal from './editModal.js';
-import deleteModal from './deleteModal.js';
+import pagination from './components/pagination.js';
+import editModal from './components/editModal.js';
+import deleteModal from './components/deleteModal.js';
+import toast from './components/toast.js';
 
 const app = {
   components: {
     pagination,
     editModal,
-    deleteModal
+    deleteModal,
+    toast
   },
   data () {
     return {
       productList: [],
       tempProduct: {},
-      pages: 1
+      pages: 1,
+      msg: {}
     }
   },
   methods: {
@@ -33,7 +36,7 @@ const app = {
       axios.get(url)
         .then((res) => {
           this.productList = res.data.products;
-          this.pages = res.data.pagination;          ;
+          this.pages = res.data.pagination;
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -45,6 +48,11 @@ const app = {
         .then((res) => {
           this.getProducts();
           this.$refs.delMsg.closeModal();
+          this.msg = {
+            title: '刪除產品',
+            content: '已刪除'
+          }
+          setTimeout(() => { this.msg = {}}, 2000);
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -88,6 +96,18 @@ const app = {
         .then((res) => {
           this.getProducts();
           this.$refs.editMsg.closeModal();
+          if (!this.tempProduct.id) {
+            this.msg = {
+              title: '新增產品',
+              content: '已新增'
+            }
+          } else {
+            this.msg = {
+              title: '編輯產品',
+              content: '已編輯'
+            }
+          }
+          setTimeout(() => { this.msg = {}}, 2000);
           this.tempProduct = {};
         })
         .catch((err) => {

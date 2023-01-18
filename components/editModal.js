@@ -1,4 +1,4 @@
-import { apiUrl, apiPath } from './apiEnv.js';
+import { apiUrl, apiPath } from '../apiEnv.js';
 
 export default {
   props: ['tempProduct', 'editProduct'],
